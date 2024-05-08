@@ -1,4 +1,4 @@
-#３つのペアをひとつのグラフに表示する
+#３つのペアのうち、2つづつの比較を行う
 
 import streamlit as st
 import yfinance as yf
@@ -6,11 +6,11 @@ import pandas as pd
 import plotly.graph_objs as go
 
 # Streamlitアプリのタイトルを設定
-st.header('Three Currency comparison')
+st.header('Two Currency comparison')
 
 # 開始日と終了日の入力欄を設定
-#start_date = st.date_input('Start date', value=pd.to_datetime('2023-12-01'))
-# end_date =  st.date_input('End date', value=pd.to_datetime('2024-04-30'))
+# start_date = st.date_input('Start date', value=pd.to_datetime('2023-12-01'))
+# end_date =  st.date_input('End date', value=pd.to_datetime('2024-02-14'))
 
 # ユーザーが日付を入力する形式にする
 start_date = st.text_input('Start date (YYYY-MM-DD)', '2024/04/01')
@@ -30,23 +30,53 @@ def get_currency_data(start, end):
 
 usd_data, cny_data, inr_data = get_currency_data(start_date, end_date)
 
-fig = go.Figure()
+fig1 = go.Figure()
 
-# USDJPYのデータを追加
-fig.add_trace(go.Scatter(x=usd_data.index, y=usd_data['Close'], mode='lines', name='USDJPY', yaxis='y'))
-# CNYJPYのデータを追加
-fig.add_trace(go.Scatter(x=cny_data.index, y=cny_data['Close'], mode='lines', name='CNYJPY', yaxis='y2'))
-# INRJPYのデータを追加
-fig.add_trace(go.Scatter(x=inr_data.index, y=inr_data['Close'], mode='lines', name='INRJPY', yaxis='y3'))
+# USDJPYとCNYJPYのデータを追加
+fig1.add_trace(go.Scatter(x=usd_data.index, y=usd_data['Close'], mode='lines', name='USDJPY', yaxis='y'))
+fig1.add_trace(go.Scatter(x=cny_data.index, y=cny_data['Close'], mode='lines', name='CNYJPY', yaxis='y2'))
 
 # レイアウトの設定
-fig.update_layout(
-    title="USDJPY, CNYJPY, INRJPYの比較",
+fig1.update_layout(
+    title="USDJPYとCNYJPYの比較",
     yaxis=dict(title="USDJPY", side="left", position=0.05),
     yaxis2=dict(title="CNYJPY", side="right", overlaying="y", position=0.95),
-    yaxis3=dict(title="INRJPY", side="right", overlaying="y", position=0.85),
     xaxis=dict(title="Date")
 )
 
 # グラフを表示
-st.plotly_chart(fig)
+st.plotly_chart(fig1)
+
+fig2 = go.Figure()
+
+# USDJPYとINRJPYのデータを追加
+fig2.add_trace(go.Scatter(x=usd_data.index, y=usd_data['Close'], mode='lines', name='USDJPY', yaxis='y'))
+fig2.add_trace(go.Scatter(x=inr_data.index, y=inr_data['Close'], mode='lines', name='INRJPY', yaxis='y2'))
+
+# レイアウトの設定
+fig2.update_layout(
+    title="USDJPYとINRJPYの比較",
+    yaxis=dict(title="USDJPY", side="left", position=0.05),
+    yaxis2=dict(title="INRJPY", side="right", overlaying="y", position=0.95),
+    xaxis=dict(title="Date")
+)
+
+# グラフを表示
+st.plotly_chart(fig2)
+
+fig3 = go.Figure()
+
+# CNYJPYとINRJPYのデータを追加
+fig3.add_trace(go.Scatter(x=cny_data.index, y=cny_data['Close'], mode='lines', name='CNYJPY', yaxis='y'))
+fig3.add_trace(go.Scatter(x=inr_data.index, y=inr_data['Close'], mode='lines', name='INRJPY', yaxis='y2'))
+
+# レイアウトの設定
+fig3.update_layout(
+    title="CNYJPYとINRJPYの比較",
+    yaxis=dict(title="CNYJPY", side="left", position=0.05),
+    yaxis2=dict(title="INRJPY", side="right", overlaying="y", position=0.95),
+    xaxis=dict(title="Date")
+)
+
+# グラフを表示
+st.plotly_chart(fig3)

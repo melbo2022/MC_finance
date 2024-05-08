@@ -1,17 +1,16 @@
-#3つの通貨のグラフを横並びに表示する
+#３つのペアをひとつのグラフに表示する
 
 import streamlit as st
 import yfinance as yf
-import matplotlib.pyplot as plt
-
 import pandas as pd
-
+import plotly.graph_objs as go
 
 # Streamlitアプリのタイトルを設定
-st.header('Three Currency Graphs')
-# ユーザーが期間を選択できるようにする
-# start_date = st.date_input('Start date', value=pd.to_datetime('2023-12-01'))
-# end_date = st.date_input('End date', value=pd.to_datetime('2024-04-30'))
+st.header('Three Currency comparison')
+
+# 開始日と終了日の入力欄を設定
+#start_date = st.date_input('Start date', value=pd.to_datetime('2023-12-01'))
+# end_date =  st.date_input('End date', value=pd.to_datetime('2024-04-30'))
 
 # ユーザーが日付を入力する形式にする
 start_date = st.text_input('Start date (YYYY-MM-DD)', '2024/04/01')
@@ -20,45 +19,34 @@ end_date = st.text_input('End date (YYYY-MM-DD)', '2024/04/30')
 # 入力された日付を datetime オブジェクトに変換
 start_date = pd.to_datetime(start_date)
 end_date = pd.to_datetime(end_date)
-currency_list=['USD', 'CNY', 'INR']
 
-currency_pair_list=[]
-for currency_code in currency_list:
-    # 通貨に対する通貨ペアを作成
-    currency_pair = f'{currency_code}JPY=X' 
-    currency_pair_list.append(currency_pair)
+# データの取得とグラフの作成
+@st.cache_resource
+def get_currency_data(start, end):
+    usd_data = yf.download('USDJPY=X', start=start, end=end)
+    cny_data = yf.download('CNYJPY=X', start=start, end=end)
+    inr_data = yf.download('INRJPY=X', start=start, end=end)
+    return usd_data, cny_data, inr_data
 
-#グラフを格納するリスト
-fig_list = []
-for currency_pair in currency_pair_list:
-    # 新しい図を作成(これがないとグラフが重なってしまう)
-    fig = plt.figure()
+usd_data, cny_data, inr_data = get_currency_data(start_date, end_date)
 
-    # 通貨ペアの為替レートの履歴データを取得
-    data = yf.download(currency_pair, start=start_date, end=end_date)
+fig = go.Figure()
 
-    # インデックスから時刻を削除
-    data.index = data.index.date
+# USDJPYのデータを追加
+fig.add_trace(go.Scatter(x=usd_data.index, y=usd_data['Close'], mode='lines', name='USDJPY', yaxis='y'))
+# CNYJPYのデータを追加
+fig.add_trace(go.Scatter(x=cny_data.index, y=cny_data['Close'], mode='lines', name='CNYJPY', yaxis='y2'))
+# INRJPYのデータを追加
+fig.add_trace(go.Scatter(x=inr_data.index, y=inr_data['Close'], mode='lines', name='INRJPY', yaxis='y3'))
 
-    # 終値のグラフを描画
-    plt.plot(data.index, data['Close'])
-    plt.title(f'{currency_pair} Rate Over Time')  
-    plt.xlabel('Date')
-    plt.ylabel('Rate')
+# レイアウトの設定
+fig.update_layout(
+    title="USDJPY, CNYJPY, INRJPYの比較",
+    yaxis=dict(title="USDJPY", side="left", position=0.05),
+    yaxis2=dict(title="CNYJPY", side="right", overlaying="y", position=0.95),
+    yaxis3=dict(title="INRJPY", side="right", overlaying="y", position=0.85),
+    xaxis=dict(title="Date")
+)
 
-    #grafをリストに追加
-    fig_list.append(fig)
-
-
-# グラフを横に並べて表示
-fig, axs = plt.subplots(1, 3, figsize=(15, 5))
-
-#fig_listの中身を確認
-print(fig_list)
-
-#fig_listの中のグラフを横並びに表示
-for i in range(len(fig_list)):
-    axs[i].plot(fig_list[i].axes[0].get_lines()[0].get_xdata(), fig_list[i].axes[0].get_lines()[0].get_ydata())
-    axs[i].set_title(f'Graph {i+1}')
-
-st.pyplot(fig)
+# グラフを表示
+st.plotly_chart(fig)
