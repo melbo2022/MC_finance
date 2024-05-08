@@ -7,4 +7,4 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 
-st.title('為替グラフとデータフレーム')
+st.subheader('為替グラフとデータフレーム')

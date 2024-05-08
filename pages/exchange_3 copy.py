@@ -8,7 +8,7 @@ import pandas as pd
 
 
 # Streamlitアプリのタイトルを設定
-st.header('Three Currency Graphs')
+st.title('為替グラフ')
 # ユーザーが期間を選択できるようにする
 # start_date = st.date_input('Start date', value=pd.to_datetime('2023-12-01'))
 # end_date = st.date_input('End date', value=pd.to_datetime('2024-04-30'))

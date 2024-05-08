@@ -6,11 +6,19 @@ import pandas as pd
 import plotly.graph_objs as go
 
 # Streamlitアプリのタイトルを設定
-st.title('為替変動比較')
+st.header('Two Currency comparison')
 
 # 開始日と終了日の入力欄を設定
-start_date = st.date_input('Start date', value=pd.to_datetime('2023-12-01'))
-end_date =  st.date_input('End date', value=pd.to_datetime('2024-02-14'))
+# start_date = st.date_input('Start date', value=pd.to_datetime('2023-12-01'))
+# end_date =  st.date_input('End date', value=pd.to_datetime('2024-02-14'))
+
+# ユーザーが日付を入力する形式にする
+start_date = st.text_input('Start date (YYYY-MM-DD)', '2024/04/01')
+end_date = st.text_input('End date (YYYY-MM-DD)', '2024/04/30')
+
+# 入力された日付を datetime オブジェクトに変換
+start_date = pd.to_datetime(start_date)
+end_date = pd.to_datetime(end_date)
 
 # データの取得とグラフの作成
 @st.cache_resource
