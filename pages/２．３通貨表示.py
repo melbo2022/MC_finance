@@ -9,8 +9,8 @@ import pandas as pd
 st.header('Three Currency Graphs and Dataframes')
 
 # ユーザーが日付を入力する形式にする
-start_date = st.text_input('Start date (YYYY-MM-DD)', '2024/04/01')
-end_date = st.text_input('End date (YYYY-MM-DD)', '2024/04/30')
+start_date = st.text_input('Start date', '2024/04/01')
+end_date = st.text_input('End date', '2024/04/30')
 
 # 入力された日付を datetime オブジェクトに変換
 start_date = pd.to_datetime(start_date)
