@@ -6,17 +6,17 @@ import plotly.graph_objs as go
 import pandas as pd
 
 # Streamlitアプリのタイトルを設定
-st.header('Three Currency Graphs and Dataframes')
+st.header('Four Currency Graphs and Dataframes')
 
 # ユーザーが日付を入力する形式にする
-start_date = st.text_input('Start date', '2024/04/01')
-end_date = st.text_input('End date', '2024/04/30')
+start_date = st.text_input('Start date', '2023/12/01')
+end_date = st.text_input('End date', '2024/05/31')
 
 # 入力された日付を datetime オブジェクトに変換
 start_date = pd.to_datetime(start_date)
 end_date = pd.to_datetime(end_date)
 
-currency_list = ['USD', 'CNY', 'INR']
+currency_list = ['USD', 'CNY', 'INR','NGN']
 
 currency_pair_list = []
 for currency_code in currency_list:
@@ -27,6 +27,10 @@ for currency_code in currency_list:
 for currency_pair in currency_pair_list:
     # 通貨ペアの為替レートの履歴データを取得
     data = yf.download(currency_pair, start=start_date, end=end_date)
+
+    # 3月14日のデータを除外
+    if currency_pair == 'NGNJPY=X':
+        data = data[data.index != '2024-03-14']
 
     # インデックスから時刻を削除
     data.index = data.index.date

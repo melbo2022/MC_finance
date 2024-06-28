@@ -9,7 +9,7 @@ import pandas as pd
 st.header('Currency Graph and Dataframe by selection ')
 
 # セレクトボックスを作成し、ユーザーの選択を取得
-currency_code = st.selectbox('Select currency', ('USD', 'CNY', 'INR'))
+currency_code = st.selectbox('Select currency', ('USD', 'CNY', 'INR', 'NGN'))
 currency_display = currency_code
 
 # 選択された通貨に対する通貨ペアを作成
@@ -17,8 +17,8 @@ currency_pair = f'{currency_code}JPY=X' if currency_code != 'USD' else 'JPY=X'
 
 # ユーザーが期間を選択できるようにする（数値入力形式）
 # ユーザーが日付を入力する形式にする
-start_date = st.text_input('Start date', '2024/04/01')
-end_date = st.text_input('End date', '2024/04/30')
+start_date = st.text_input('Start date', '2023/12/01')
+end_date = st.text_input('End date', '2024/05/31')
 
 # 入力された日付を datetime オブジェクトに変換
 start_date = pd.to_datetime(start_date)
@@ -27,6 +27,10 @@ end_date = pd.to_datetime(end_date)
 # 通貨ペアの為替レートの履歴データを取得
 data = yf.download(currency_pair, start=start_date, end=end_date)
 
+# 3月14日のデータを除外
+if currency_code == 'NGN':
+    data = data[data.index != '2024-03-14']
+
 # Streamlitアプリのタイトルを設定
 if currency_code == 'USD':
     st.subheader('USD to JPY Rate')
@@ -34,6 +38,8 @@ elif currency_code == 'CNY':
     st.subheader('CNY to JPY Rate')
 elif currency_code == 'INR':
     st.subheader('INR to JPY Rate')
+elif currency_code == 'NGN':
+    st.subheader('NGN to JPY Rate')
 
 # Plotly Expressを使って為替レートの時系列グラフを作成
 fig = px.line(data, x=data.index, y='Close')
